@@ -1,6 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import React, { RefObject, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
+import { useColorScheme } from "react-native";
 import AuthButton from "../components/auth/AuthButton";
 import AuthLayout from "../components/auth/AuthLayout";
 import { TextInput } from "../components/auth/AuthShared";
@@ -29,11 +30,16 @@ const CREATE_ACCOUNT_MUTATION = gql`
 export default function CreateAccount({ navigation }: any) {
   const onCompleted = (data: any) => {
     const {
-      createAccount: { ok },
+      createAccount: { ok, error },
     } = data;
     const { username, password } = getValues();
+
     if (ok) {
       navigation.navigate("Login", { username, password });
+    }
+
+    if (error) {
+      alert(error);
     }
   };
   const { register, handleSubmit, setValue, getValues, watch } = useForm();
@@ -67,47 +73,59 @@ export default function CreateAccount({ navigation }: any) {
     register("email", { required: true });
     register("password", { required: true });
   }, [register]);
+
+  const isDark = useColorScheme() === "dark";
+
   return (
     <AuthLayout>
       <TextInput
         placeholder="First Name"
-        placeholderTextColor={"rgba(255, 255, 255, 0.8)"}
+        placeholderTextColor={isDark ? "rgba(255, 255, 255, 0.8)" : "#888888"}
         returnKeyType="next"
+        lastOne={false}
+        isDark={isDark}
         onSubmitEditing={() => onFocusNext(lastNameRef)}
         onChangeText={(text: string) => setValue("firstName", text)}
       />
       <TextInput
         ref={lastNameRef}
         placeholder="Last Name"
-        placeholderTextColor={"rgba(255, 255, 255, 0.8)"}
+        placeholderTextColor={isDark ? "rgba(255, 255, 255, 0.8)" : "#888888"}
         returnKeyType="next"
+        lastOne={false}
+        isDark={isDark}
         onSubmitEditing={() => onFocusNext(userNameRef)}
         onChangeText={(text: string) => setValue("lastName", text)}
       />
       <TextInput
         ref={userNameRef}
         placeholder="User Name"
-        placeholderTextColor={"rgba(255, 255, 255, 0.8)"}
+        placeholderTextColor={isDark ? "rgba(255, 255, 255, 0.8)" : "#888888"}
         returnKeyType="next"
+        lastOne={false}
+        isDark={isDark}
         onSubmitEditing={() => onFocusNext(emailRef)}
         onChangeText={(text: string) => setValue("username", text)}
       />
       <TextInput
         ref={emailRef}
         placeholder="Email"
-        placeholderTextColor={"rgba(255, 255, 255, 0.8)"}
+        placeholderTextColor={isDark ? "rgba(255, 255, 255, 0.8)" : "#888888"}
         keyboardType="email-address"
         returnKeyType="next"
+        lastOne={false}
+        isDark={isDark}
         onSubmitEditing={() => onFocusNext(passwordRef)}
         onChangeText={(text: string) => setValue("email", text)}
       />
       <TextInput
         ref={passwordRef}
         placeholder="Password"
-        placeholderTextColor={"rgba(255, 255, 255, 0.8)"}
+        placeholderTextColor={isDark ? "rgba(255, 255, 255, 0.8)" : "#888888"}
         secureTextEntry
         returnKeyType="join"
         lastOne={true}
+        isDark={isDark}
         onSubmitEditing={handleSubmit(onValid)}
         onChangeText={(text: string) => setValue("password", text)}
       />

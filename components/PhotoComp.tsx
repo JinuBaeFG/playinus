@@ -5,12 +5,14 @@ import React, { useEffect, useState } from "react";
 import {
   useWindowDimensions,
   Image,
+  Text,
+  useColorScheme,
   TouchableOpacity,
-  Platform,
 } from "react-native";
 import styled from "styled-components/native";
 import { RootStackParamList } from "../shared.types";
 import { gql, useMutation } from "@apollo/client";
+import Swiper from "react-native-swiper";
 
 type PhotoCompNavigationProps = NativeStackNavigationProp<
   RootStackParamList,
@@ -25,10 +27,26 @@ interface IPhotoCompProps {
     username: string;
   };
   caption: string;
-  file: string;
+  files: {
+    map: any;
+    id: number;
+    fileUrl: string;
+    length: number;
+  };
   isLiked: boolean;
   likes: number;
   commentNumber: number;
+  comments: {
+    id: number;
+    user: {
+      id: number;
+      username: string;
+      avatar: string;
+    };
+    payload: string;
+    isMine: boolean;
+    createdAt: string;
+  };
 }
 
 interface toggleLike_toggleLike {
@@ -53,7 +71,10 @@ const TOGGLE_LIKE_MUTATION = gql`
   }
 `;
 
-const Container = styled.View``;
+const Container = styled.View`
+  background-color: ${(props) => props.theme.mainBgColor};
+  margin-bottom: 8px;
+`;
 const Header = styled.TouchableOpacity`
   padding: 12px;
   flex-direction: row;
@@ -66,57 +87,74 @@ const UserAvatar = styled.Image`
   border-radius: 50px;
 `;
 const Username = styled.Text`
-  color: white;
+  color: ${(props) => props.theme.textColor};
   font-weight: 600;
 `;
 const File = styled.Image``;
 const Actions = styled.View`
   flex-direction: row;
   align-items: center;
+  margin-right: 4px;
 `;
 const Action = styled.TouchableOpacity`
-  margin-right: 10px;
+  flex-direction: row;
+  align-items: center;
+  margin-right: 12px;
+`;
+
+const ActionText = styled.Text`
+  font-size: 16px;
+  color: ${(props) => props.theme.grayInactColor};
+  margin-left: 4px;
 `;
 const Caption = styled.View`
   flex-direction: row;
+  padding: 16px;
 `;
 const CaptionText = styled.Text`
   margin-left: 10px;
-  color: white;
+  color: ${(props) => props.theme.textColor};
 `;
 const Likes = styled.Text`
-  color: white;
-  margin: 8px 0;
+  color: ${(props) => props.theme.grayInactColor};
+  margin: 8px 4px;
   font-weight: 600;
 `;
 
 const CommentNumber = styled.Text`
-  color: white;
-  margin: 8px 0;
+  color: ${(props) => props.theme.grayInactColor};
+  margin: 8px 4px;
   font-weight: 600;
 `;
 
 const ExtraContainer = styled.View`
-  padding: 10px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+`;
+
+const NumberContainer = styled.View`
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 16px;
 `;
 
 export default function PhotoComp({
   id,
   user,
   caption,
-  file,
+  files,
   isLiked,
   likes,
   commentNumber,
+  comments,
 }: IPhotoCompProps) {
   const navigation = useNavigation<PhotoCompNavigationProps>();
   const { width, height } = useWindowDimensions();
-  const [imageHeight, setImageHeight] = useState(height - 450);
-  useEffect(() => {
-    Image.getSize(file, (width, height) => {
-      setImageHeight(height / 3);
-    });
-  }, [file]);
+  const [imageHeight, setImageHeight] = useState(height / 3);
+
   const updateToggleLike = (cache: any, result: any) => {
     const {
       data: {
@@ -156,51 +194,93 @@ export default function PhotoComp({
       id: user.id,
     });
   };
+  const isDark = useColorScheme() === "dark";
+
   return (
     <Container>
       <Header onPress={goToProfile}>
-        <UserAvatar resizeMode="cover" source={{ uri: user.avatar }} />
+        <UserAvatar
+          resizeMode="cover"
+          source={
+            user.avatar === null
+              ? require(`../assets/emptyAvatar.png`)
+              : { uri: user.avatar }
+          }
+        />
         <Username>{user.username}</Username>
       </Header>
-      <File
-        resizeMode="cover"
-        style={{
-          width,
-          height: Platform.OS === "ios" ? imageHeight / 3 : imageHeight,
-        }}
-        source={{ uri: file }}
-      />
+      <TouchableOpacity
+        onPress={() => navigation.navigate("PhotoDetail", { id: id })}
+      >
+        <Caption>
+          <CaptionText>
+            {caption !== null
+              ? caption.length > 150
+                ? caption.substring(0, 149) + "..."
+                : caption
+              : null}
+          </CaptionText>
+        </Caption>
+      </TouchableOpacity>
+      {files.length > 0 ? (
+        <>
+          <Swiper
+            loop
+            horizontal
+            showsButtons={false}
+            showsPagination={true}
+            autoplay={false}
+            autoplayTimeout={3.5}
+            containerStyle={{
+              paddingBottom: 20,
+              marginBottom: 30,
+              width: "100%",
+              height: height / 3,
+            }}
+            paginationStyle={{
+              position: "absolute",
+              bottom: 0,
+            }}
+          >
+            {files.map((file: any, index: any) => (
+              <File
+                resizeMode="cover"
+                style={{
+                  width,
+                  height: imageHeight,
+                }}
+                source={{ uri: file.fileUrl }}
+                key={index}
+              />
+            ))}
+          </Swiper>
+        </>
+      ) : null}
+
+      <NumberContainer>
+        <Likes>좋아요 {likes}</Likes>
+        <CommentNumber>댓글 {commentNumber}</CommentNumber>
+      </NumberContainer>
       <ExtraContainer>
         <Actions>
-          <Action onPress={toggleLikeMutation}>
+          <Action onPress={() => navigation.navigate("Comments", { id: id })}>
+            <Ionicons
+              name="chatbubble-outline"
+              color={isDark ? "#ffffff" : "#1e272e"}
+              style={{ marginBottom: 2 }}
+              size={16}
+            />
+            <ActionText>댓글 달기</ActionText>
+          </Action>
+          <Action onPress={() => toggleLikeMutation()}>
             <Ionicons
               name={isLiked ? "heart" : "heart-outline"}
-              color={isLiked ? "tomato" : "white"}
-              size={24}
+              color={isLiked ? "tomato" : isDark ? "#ffffff" : "#1e272e"}
+              size={20}
             />
-          </Action>
-          <Action onPress={() => navigation.navigate("Comments")}>
-            <Ionicons name="chatbubble-outline" color="white" size={24} />
+            <ActionText>좋아요</ActionText>
           </Action>
         </Actions>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("Likes", {
-              photoId: id,
-            })
-          }
-        >
-          <Likes>{likes === 1 ? "1 like" : `${likes} likes`}</Likes>
-        </TouchableOpacity>
-        <CommentNumber>
-          {commentNumber === 1 ? "1 Comment" : `${commentNumber} Comments`}
-        </CommentNumber>
-        <Caption>
-          <TouchableOpacity onPress={goToProfile}>
-            <Username>{user.username}</Username>
-          </TouchableOpacity>
-          <CaptionText>{caption}</CaptionText>
-        </Caption>
       </ExtraContainer>
     </Container>
   );

@@ -1,17 +1,17 @@
 import React from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, useColorScheme, View } from "react-native";
+import styled from "styled-components/native";
+
+const ScreenLayoutContiner = styled.View`
+  flex: 1;
+  background-color: ${(props) => props.theme.grayInactColor};
+`;
 
 export default function ScreenLayout({ loading, children }: any) {
+  const isDark = useColorScheme() === "dark";
   return (
-    <View
-      style={{
-        backgroundColor: "black",
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
+    <ScreenLayoutContiner>
       {loading ? <ActivityIndicator color="white" /> : children}
-    </View>
+    </ScreenLayoutContiner>
   );
 }

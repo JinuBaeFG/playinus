@@ -4,7 +4,8 @@ import { TextInput } from "../components/auth/AuthShared";
 import AuthButton from "../components/auth/AuthButton";
 import AuthLayout from "../components/auth/AuthLayout";
 import { gql, useMutation } from "@apollo/client";
-import { isLoggedInVar, logUserIn } from "../apollo";
+import { logUserIn } from "../apollo";
+import { useColorScheme } from "react-native";
 
 const LOG_IN_MUTATION = gql`
   mutation login($username: String!, $password: String!) {
@@ -57,13 +58,19 @@ export default function Login({ route: { params } }: any) {
     register("password", { required: true });
   }, [register]);
 
+  const isDark = useColorScheme() === "dark";
+
   return (
     <AuthLayout>
       <TextInput
         value={watch("username")}
         placeholder="User Name"
-        placeholderTextColor={"rgba(255, 255, 255, 0.8)"}
+        placeholderTextColor={
+          isDark ? "rgba(255, 255, 255, 0.8)" : "rgba(0, 0, 0, 0.8)"
+        }
+        isDark={isDark}
         returnKeyType="next"
+        lastOne={false}
         autoCapitalize="none"
         onSubmitEditing={() => onFocusNext(passwordRef)}
         onChangeText={(text: string) => setValue("username", text)}
@@ -72,7 +79,10 @@ export default function Login({ route: { params } }: any) {
         value={watch("password")}
         ref={passwordRef}
         placeholder="Password"
-        placeholderTextColor={"rgba(255, 255, 255, 0.8)"}
+        placeholderTextColor={
+          isDark ? "rgba(255, 255, 255, 0.8)" : "rgba(0, 0, 0, 0.8)"
+        }
+        isDark={isDark}
         secureTextEntry
         returnKeyType="done"
         lastOne={true}

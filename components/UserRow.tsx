@@ -30,7 +30,7 @@ const Avatar = styled.Image`
 `;
 const Username = styled.Text`
   font-weight: 600;
-  color: white;
+  color: ${(props) => props.theme.textColor};
 `;
 
 const Wrapper = styled.View`
@@ -46,7 +46,7 @@ const FollowBtn = styled.TouchableOpacity`
   border-radius: 4px;
 `;
 const FollowBtnText = styled.Text`
-  color: white;
+  color: ${(props) => props.theme.textColor};
 `;
 
 export default function UserRow({

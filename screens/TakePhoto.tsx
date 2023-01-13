@@ -10,7 +10,7 @@ import { StatusBar } from "expo-status-bar";
 
 const Container = styled.View`
   flex: 1;
-  background-color: black;
+  background-color: ${(props) => props.theme.mainBgColor}; ;
 `;
 
 const Actions = styled.View`
@@ -67,7 +67,7 @@ const PhotoActions = styled.View`
 `;
 
 const PhotoAction = styled.TouchableOpacity`
-  background-color: white;
+  background-color: ${(props) => props.theme.mainBgColor};
   padding: 5px 10px;
   border-radius: 4px;
 `;

@@ -13,17 +13,17 @@ import { StatusBar } from "expo-status-bar";
 
 const Container = styled.View`
   flex: 1;
-  background-color: black;
+  background-color: ${(props) => props.theme.mainBgColor};
 `;
 
 const Top = styled.View`
   flex: 1;
-  background-color: black;
+  background-color: ${(props) => props.theme.mainBgColor};
 `;
 
 const Bottom = styled.View`
   flex: 1;
-  background-color: black;
+  background-color: ${(props) => props.theme.mainBgColor};
 `;
 
 const ImageContainer = styled.TouchableOpacity``;
@@ -43,8 +43,9 @@ const HeaderRightText = styled.Text`
 
 export default function SelectPhoto({ navigation }: any) {
   const [ok, setOk] = useState(false);
-  const [photos, setPhotos] = useState([]);
+  const [photos, setPhotos] = useState<MediaLibrary.Asset[]>([]);
   const [chosenPhoto, setChosenPhoto] = useState("");
+  const [localPhoto, setLocalPhoto] = useState<string | undefined>("");
   const getPhotos = async () => {
     if (ok) {
       const { assets: photo } = await MediaLibrary.getAssetsAsync();
@@ -76,7 +77,7 @@ export default function SelectPhoto({ navigation }: any) {
   const HeaderRight = () => {
     return (
       <TouchableOpacity
-        onPress={() => navigation.navigate("UploadForm", { file: chosenPhoto })}
+        onPress={() => navigation.navigate("UploadForm", { file: localPhoto })}
       >
         <HeaderRightText>Next</HeaderRightText>
       </TouchableOpacity>
@@ -92,23 +93,26 @@ export default function SelectPhoto({ navigation }: any) {
   const { width } = useWindowDimensions();
   const choosePhoto = async (id: any) => {
     const info = await MediaLibrary.getAssetInfoAsync(id);
+    setLocalPhoto(info.localUri);
     setChosenPhoto(info.uri);
   };
-  const renderItem = ({ item: photo }: any) => (
-    <ImageContainer onPress={() => choosePhoto(photo.id)}>
-      <Image
-        source={{ uri: photo.uri }}
-        style={{ width: width / 4, height: width / 4 }}
-      />
-      <IconContainer>
-        <Ionicons
-          name="checkmark-circle"
-          size={16}
-          color={photo.uri === chosenPhoto ? colors.blue : "white"}
+  const renderItem = ({ item: photo }: any) => {
+    return (
+      <ImageContainer onPress={() => choosePhoto(photo.id)}>
+        <Image
+          source={{ uri: photo.uri }}
+          style={{ width: width / 4, height: width / 4 }}
         />
-      </IconContainer>
-    </ImageContainer>
-  );
+        <IconContainer>
+          <Ionicons
+            name="checkmark-circle"
+            size={16}
+            color={photo.uri === chosenPhoto ? colors.blue : "white"}
+          />
+        </IconContainer>
+      </ImageContainer>
+    );
+  };
   return (
     <Container>
       <StatusBar hidden={false} />

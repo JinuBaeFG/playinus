@@ -11,7 +11,7 @@ const Button = styled.TouchableOpacity<{ disabled: boolean }>`
   opacity: ${(props) => (props.disabled ? "0.5" : "1")};
 `;
 const ButtonText = styled.Text`
-  color: white;
+  color: ${(props) => props.theme.textColor};
   text-align: center;
   font-weight: 600;
 `;

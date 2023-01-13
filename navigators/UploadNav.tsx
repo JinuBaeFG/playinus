@@ -4,31 +4,36 @@ import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import SelectPhoto from "../screens/SelectPhoto";
 import TakePhoto from "../screens/TakePhoto";
+import { useColorScheme } from "react-native";
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
 
 export default function UploadNav() {
+  const isDark = useColorScheme() === "dark";
   return (
     <Tab.Navigator
       tabBarPosition="bottom"
       screenOptions={{
-        tabBarStyle: { backgroundColor: "black" },
-        tabBarActiveTintColor: "white",
-        tabBarIndicatorStyle: { backgroundColor: "white", top: 0 },
+        tabBarStyle: { backgroundColor: isDark ? "#1e272e" : "#ffffff" },
+        tabBarActiveTintColor: isDark ? "#ffffff" : "#1e272e",
+        tabBarIndicatorStyle: {
+          backgroundColor: isDark ? "#1e272e" : "#ffffff",
+          top: 0,
+        },
       }}
     >
       <Tab.Screen name="Select">
         {() => (
           <Stack.Navigator
             screenOptions={{
-              headerTintColor: "white",
+              headerTintColor: isDark ? "#ffffff" : "#1e272e",
               headerBackTitleVisible: false,
               headerBackImage: ({ tintColor }) => (
                 <Ionicons color={tintColor} name="close" size={28} />
               ),
               headerStyle: {
-                backgroundColor: "black",
+                backgroundColor: isDark ? "#1e272e" : "#ffffff",
                 shadowOpacity: 0.3,
               },
             }}

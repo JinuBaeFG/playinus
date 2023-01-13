@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   useWindowDimensions,
   FlatList,
+  useColorScheme,
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import styled from "styled-components/native";
@@ -27,13 +28,13 @@ const MessageContainer = styled.View`
   align-items: center;
 `;
 const MessageText = styled.Text`
-  color: white;
+  color: ${(props) => props.theme.textColor};
   font-weight: 600;
 `;
 
 const Input = styled.TextInput<{ width: number }>`
-  background-color: white;
-  color: black;
+  background-color: ${(props) => props.theme.mainBgColor};
+  color: ${(props) => props.theme.textColor};
   width: ${(props) => props.width / 1.5}px;
   padding: 5px 10px;
   border-radius: 4px;
@@ -87,13 +88,13 @@ export default function Search({ navigation }: any) {
       </TouchableOpacity>
     );
   };
-  console.log(data);
+  const isDark = useColorScheme() === "dark";
   return (
     <DissmissKeyboard>
       <View
         style={{
           flex: 1,
-          backgroundColor: "black",
+          backgroundColor: isDark ? "#1e272e" : "#ffffff",
         }}
       >
         {loading ? (

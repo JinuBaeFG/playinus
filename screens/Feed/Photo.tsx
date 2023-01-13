@@ -1,10 +1,13 @@
 import { gql, useQuery } from "@apollo/client";
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, RefreshControl } from "react-native";
+import { RefreshControl } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import PhotoComp from "../components/PhotoComp";
-import ScreenLayout from "../components/ScreenLayout";
-import { COMMENT_FRAGMENT_NATIVE, PHOTO_FRAGMENT_NATIVE } from "../fragments";
+import PhotoComp from "../../components/PhotoComp";
+import ScreenLayout from "../../components/ScreenLayout";
+import {
+  COMMENT_FRAGMENT_NATIVE,
+  PHOTO_FRAGMENT_NATIVE,
+} from "../../fragments";
 
 const SEE_PHOTO = gql`
   query seePhoto($id: Int!) {
@@ -28,7 +31,7 @@ const SEE_PHOTO = gql`
   ${COMMENT_FRAGMENT_NATIVE}
 `;
 
-export default function Photo({ route }: any) {
+export default function Photo({ navigation, route }: any) {
   const { data, loading, refetch } = useQuery(SEE_PHOTO, {
     variables: {
       id: route?.params?.photoId,
@@ -54,7 +57,7 @@ export default function Photo({ route }: any) {
           alignItems: "center",
         }}
       >
-        <PhotoComp {...data?.seePhoto} />
+        <PhotoComp {...data?.seePhoto} navigation={navigation} />
       </ScrollView>
     </ScreenLayout>
   );

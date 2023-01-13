@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { View, Text } from "react-native";
-import useMe from "../hooks/useMe";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { cache, logUserOut } from "../../apollo";
+import useMe from "../../hooks/useMe";
 
 export default function MyProfile({ navigation }: any) {
   const { data } = useMe();
@@ -19,6 +21,14 @@ export default function MyProfile({ navigation }: any) {
       }}
     >
       <Text style={{ color: "white" }}>My Profile</Text>
+      <TouchableOpacity
+        onPress={() => {
+          cache.gc();
+          logUserOut();
+        }}
+      >
+        <Text style={{ color: "white" }}>Logout</Text>
+      </TouchableOpacity>
     </View>
   );
 }

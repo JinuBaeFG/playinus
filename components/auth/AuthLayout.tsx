@@ -4,6 +4,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
+  useColorScheme,
 } from "react-native";
 import styled from "styled-components/native";
 
@@ -11,7 +12,7 @@ const Container = styled.View`
   flex: 1;
   align-items: center;
   justify-content: center;
-  background-color: black;
+  background-color: ${(props) => props.theme.mainBgColor};
   padding: 0px 20px;
 `;
 
@@ -27,6 +28,7 @@ export default function AuthLayout({ children }: any) {
   const dismissKeyboard = () => {
     Keyboard.dismiss();
   };
+  const isDark = useColorScheme() === "dark";
   return (
     <TouchableWithoutFeedback
       style={{ flex: 1 }}
@@ -43,7 +45,11 @@ export default function AuthLayout({ children }: any) {
         >
           <Logo
             resizeMode="contain"
-            source={require("../../assets/white_logo.png")}
+            source={
+              isDark
+                ? require("../../assets/white_logo.png")
+                : require("../../assets/logo.png")
+            }
           />
           {children}
         </KeyboardAvoidingView>
